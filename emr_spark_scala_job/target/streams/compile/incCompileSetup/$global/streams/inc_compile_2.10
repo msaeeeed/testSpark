@@ -1,0 +1,146 @@
+format version: 5
+output mode:
+1 items
+0 -> single
+output directories:
+1 items
+output dir -> /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes
+compile options:
+0 items
+javac options:
+0 items
+compiler version:
+1 items
+0 -> 2.10.7
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> true
+products:
+2 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp$.class
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp.class
+binary dependencies:
+4 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/jre/lib/rt.jar
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Users/d437487/.ivy2/cache/org.apache.spark/spark-catalyst_2.10/jars/spark-catalyst_2.10-2.2.0.jar
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Users/d437487/.ivy2/cache/org.apache.spark/spark-sql_2.10/jars/spark-sql_2.10-2.2.0.jar
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> /Users/d437487/.sbt/boot/scala-2.10.7/lib/scala-library.jar
+direct source dependencies:
+0 items
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+0 items
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+0 items
+inheritance external dependencies:
+0 items
+class names:
+2 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> com.burda.simpleApp
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> com.burda.simpleApp$
+used names:
+62 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> <init>
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> <repeated>
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Any
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> AnyRef
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Array
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Boolean
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Builder
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Complete
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> DataFrame
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> DataFrameReader
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> DataStreamReader
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> DataStreamWriter
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Long
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Object
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> OffsetDateTime
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> OutputMode
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Predef
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> ProcessingTime
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> RelationalGroupedDataset
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> ResultSet
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Row
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> SparkSession
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> StreamingQuery
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> String
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> StructType
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Trigger
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> Unit
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> apache
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> appName
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> awaitTermination
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> builder
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> burda
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> com
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> count
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> format
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> functions
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> getOrCreate
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> groupBy
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> implicits
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> in
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> java
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> load
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> option
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> org
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> outputMode
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> package
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> println
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> queryName
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> read
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> readStream
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> scala
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> schema
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> schemaImp
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> simpleApp
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> spark
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> sql
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> start
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> streaming
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> time
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> trigger
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> types
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> writeStream
+product stamps:
+2 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp$.class -> lastModified(1537125724000)
+/Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp.class -> lastModified(1537125724000)
+source stamps:
+1 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> hash(44238068dbe81656b1d3ef1a7b0b82200a673456)
+binary stamps:
+4 items
+/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/jre/lib/rt.jar -> lastModified(1522278011000)
+/Users/d437487/.ivy2/cache/org.apache.spark/spark-catalyst_2.10/jars/spark-catalyst_2.10-2.2.0.jar -> lastModified(1498869339000)
+/Users/d437487/.ivy2/cache/org.apache.spark/spark-sql_2.10/jars/spark-sql_2.10-2.2.0.jar -> lastModified(1498869446000)
+/Users/d437487/.sbt/boot/scala-2.10.7/lib/scala-library.jar -> lastModified(1509739617000)
+class names:
+4 items
+/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/jre/lib/rt.jar -> java.lang.Object
+/Users/d437487/.ivy2/cache/org.apache.spark/spark-catalyst_2.10/jars/spark-catalyst_2.10-2.2.0.jar -> org.apache.spark.sql.types.StructType
+/Users/d437487/.ivy2/cache/org.apache.spark/spark-sql_2.10/jars/spark-sql_2.10-2.2.0.jar -> org.apache.spark.sql.streaming.StreamingQuery
+/Users/d437487/.sbt/boot/scala-2.10.7/lib/scala-library.jar -> scala.Unit
+internal apis:
+1 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhw31ROLQAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwK6vhqnQABm5vdGlmeXNxAH4ADH+nkQR0AAR3YWl0c3EAfgAMtLUp8XQADSRhc0luc3RhbmNlT2ZzcQB+AAwznQFQdAAGZXF1YWxzc3EAfgAMjCdEKHQADGFzSW5zdGFuY2VPZnNxAH4ADKQCr7p0AAxzeW5jaHJvbml6ZWRzcQB+AAzc2ETRdAANJGlzSW5zdGFuY2VPZnNxAH4ADLGPRkl0AARtYWluc3EAfgAMuqhcB3QACW5vdGlmeUFsbHNxAH4ADEZU6td0AAxpc0luc3RhbmNlT2ZzcQB+AAxQMChidAACPT1zcQB+AAwzvKw/dAAFY2xvbmVzcQB+AAxlu66SdAAIdG9TdHJpbmdzcQB+AAzTnaM8dAACIT1zcQB+AAwQGxvcdAAIZ2V0Q2xhc3NzcQB+AAwIyTTrdAACbmVzcQB+AAwNiLkTdAAJc2ltcGxlQXBwc3EAfgAMnLUi8HQAAmVxc3EAfgAMROqAfXQAAiMjc3EAfgAMUNGTb3QACGZpbmFsaXplc3EAfgAMnvxnv3QACGhhc2hDb2Rlc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAXNyABN4c2J0aS5hcGkuQ2xhc3NMaWtlgzQcod+wl2wCAARMAA5kZWZpbml0aW9uVHlwZXQAGkx4c2J0aS9hcGkvRGVmaW5pdGlvblR5cGU7WwAQc2F2ZWRBbm5vdGF0aW9uc3QAE1tMamF2YS9sYW5nL1N0cmluZztMAAhzZWxmVHlwZXQAEEx4c2J0aS9hcGkvTGF6eTtMAAlzdHJ1Y3R1cmVxAH4AQXhyACF4c2J0aS5hcGkuUGFyYW1ldGVyaXplZERlZmluaXRpb275EW6x1VA84gIAAVsADnR5cGVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvVHlwZVBhcmFtZXRlcjt4cgAUeHNidGkuYXBpLkRlZmluaXRpb26HKhvocULjRgIABEwABmFjY2Vzc3QAEkx4c2J0aS9hcGkvQWNjZXNzO1sAC2Fubm90YXRpb25zdAAXW0x4c2J0aS9hcGkvQW5ub3RhdGlvbjtMAAltb2RpZmllcnN0ABVMeHNidGkvYXBpL01vZGlmaWVycztMAARuYW1lcQB+AA14cHNyABB4c2J0aS5hcGkuUHVibGljulg9rmwtYEICAAB4cgAQeHNidGkuYXBpLkFjY2Vzc91imvgdYzFIAgAAeHB1cgAXW0x4c2J0aS5hcGkuQW5ub3RhdGlvbjvrl+sZEPaNSAIAAHhwAAAAAHNyABN4c2J0aS5hcGkuTW9kaWZpZXJzl+dh3BMme7MCAAFCAAVmbGFnc3hwAHQAE2NvbS5idXJkYS5zaW1wbGVBcHB1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAAAc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AFlzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AQUwACWluaGVyaXRlZHEAfgBBTAAHcGFyZW50c3EAfgBBeHEAfgBec3EAfgBZdXEAfgA8AAAAAXNyAA14c2J0aS5hcGkuRGVmUr6f4ny0NmkCAAJMAApyZXR1cm5UeXBldAAQTHhzYnRpL2FwaS9UeXBlO1sAD3ZhbHVlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1BhcmFtZXRlckxpc3Q7eHEAfgBCcQB+AEt1cQB+AEwAAAAAc3EAfgBOAHEAfgAddXEAfgBRAAAAAHNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AF10AARVbml0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBdc3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AAVzY2FsYXNyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB5dXIAGltMeHNidGkuYXBpLlBhcmFtZXRlckxpc3Q79dM6HfKzcO4CAAB4cAAAAAFzcgAXeHNidGkuYXBpLlBhcmFtZXRlckxpc3TWxbwcZEl04wIAAloACmlzSW1wbGljaXRbAApwYXJhbWV0ZXJzdAAcW0x4c2J0aS9hcGkvTWV0aG9kUGFyYW1ldGVyO3hwAHVyABxbTHhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXI7z7jFXaXdtW0CAAB4cAAAAAFzcgAZeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlch9FrhfTSbDqAgAEWgAKaGFzRGVmYXVsdEwACG1vZGlmaWVydAAdTHhzYnRpL2FwaS9QYXJhbWV0ZXJNb2RpZmllcjtMAARuYW1lcQB+AA1MAAN0cGVxAH4AZnhwAH5yABt4c2J0aS5hcGkuUGFyYW1ldGVyTW9kaWZpZXIAAAAAAAAAABIAAHhxAH4AVHQABVBsYWludAAEYXJnc3NyABd4c2J0aS5hcGkuUGFyYW1ldGVyaXplZBZs7mkDybt/AgACTAAIYmFzZVR5cGVxAH4AbVsADXR5cGVBcmd1bWVudHN0ABFbTHhzYnRpL2FwaS9UeXBlO3hxAH4AXXNxAH4AbHQABUFycmF5cQB+AHJ1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAXNxAH4AbHQABlN0cmluZ3NxAH4AcHNxAH4Ac3VxAH4AdgAAAANzcQB+AHh0AARqYXZhc3EAfgB4dAAEbGFuZ3EAfgB9c3EAfgBZdXEAfgA8AAAAAHNxAH4AWXVxAH4AkQAAAAJzcQB+AGx0AAZPYmplY3RxAH4AlXNxAH4AbHQAA0FueXEAfgBydXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAJzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAAJY29tLmJ1cmRhc3EAfgCmdAADY29tc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFl49UlXHVyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4ADUwAD3NvdXJjZURpcmVjdG9yeXEAfgANeHB0AEkvVXNlcnMvZDQzNzQ4Ny9JZGVhUHJvamVjdHMvZW1yX3NwYXJrX3NjYWxhX2pvYi90YXJnZXQvc2NhbGEtMi4xMC9jbGFzc2VzdAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAURCOAaNvoFlax0+8aewuCIApnNFY=
+external apis:
+0 items
+source infos:
+1 items
+/Users/d437487/IdeaProjects/emr_spark_scala_job/src/main/scala/simpleApp.scala -> 
+AAAAAAAAAAA=
+compilations:
+1 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABZePVJVx1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQASS9Vc2Vycy9kNDM3NDg3L0lkZWFQcm9qZWN0cy9lbXJfc3Bhcmtfc2NhbGFfam9iL3RhcmdldC9zY2FsYS0yLjEwL2NsYXNzZXN0AAEv

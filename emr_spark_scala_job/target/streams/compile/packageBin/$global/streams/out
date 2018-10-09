@@ -1,0 +1,11 @@
+[0m[[0minfo[0m] [0mPackaging /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/emr_spark_scala_job_2.10-1.0.jar ...[0m
+[0m[[0mdebug[0m] [0mInput file mappings:[0m
+[0m[[0mdebug[0m] [0m	com[0m
+[0m[[0mdebug[0m] [0m	  /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com[0m
+[0m[[0mdebug[0m] [0m	com/burda[0m
+[0m[[0mdebug[0m] [0m	  /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda[0m
+[0m[[0mdebug[0m] [0m	com/burda/simpleApp$.class[0m
+[0m[[0mdebug[0m] [0m	  /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp$.class[0m
+[0m[[0mdebug[0m] [0m	com/burda/simpleApp.class[0m
+[0m[[0mdebug[0m] [0m	  /Users/d437487/IdeaProjects/emr_spark_scala_job/target/scala-2.10/classes/com/burda/simpleApp.class[0m
+[0m[[0minfo[0m] [0mDone packaging.[0m
