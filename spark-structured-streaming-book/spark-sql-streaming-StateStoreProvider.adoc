@@ -1,0 +1,17 @@
+== [[StateStoreProvider]] StateStoreProvider
+
+`StateStoreProvider` is...FIXME
+
+=== [[doMaintenance]] `doMaintenance` Method
+
+CAUTION: FIXME
+
+=== [[createAndInit]] `createAndInit` Method
+
+CAUTION: FIXME
+
+=== [[getStore]] `getStore` Method
+
+CAUTION: FIXME
+
+NOTE: `getStore` is used exclusively when `StateStore` is link:spark-sql-streaming-StateStore.adoc#get[requested for a state store] (given a `StateStoreProviderId`).

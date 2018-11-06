@@ -1,0 +1,84 @@
+== [[Source]] Streaming Data Source
+
+*Streaming Data Source* is a "continuous" stream of data and is described using the <<contract, Source Contract>>.
+
+`Source` can <<getBatch, generate a streaming DataFrame>> (aka *batch*) given start and end offsets in a batch.
+
+For fault tolerance, `Source` must be able to replay data given a start offset.
+
+`Source` should be able to replay an arbitrary sequence of past data in a stream using a range of offsets. Streaming sources like Apache Kafka and Amazon Kinesis (with their per-record offsets) fit into this model nicely. This is the assumption so structured streaming can achieve end-to-end exactly-once guarantees.
+
+[[available-implementations]]
+.Sources
+[cols="1,2",options="header",width="100%"]
+|===
+| Format
+| Source
+
+a| Any `FileFormat`
+
+* `csv`
+* `hive`
+* `json`
+* `libsvm`
+* `orc`
+* `parquet`
+* `text`
+| link:spark-sql-streaming-FileStreamSource.adoc[FileStreamSource]
+
+| `kafka`
+| link:spark-sql-streaming-KafkaSource.adoc[KafkaSource]
+
+| `memory`
+| link:spark-sql-streaming-MemoryStream.adoc[MemoryStream]
+
+| `rate`
+| link:spark-sql-streaming-RateStreamSource.adoc[RateStreamSource]
+
+| `socket`
+| link:spark-sql-streaming-TextSocketSource.adoc[TextSocketSource]
+|===
+
+=== [[contract]] Source Contract
+
+[source, scala]
+----
+package org.apache.spark.sql.execution.streaming
+
+trait Source {
+  def commit(end: Offset) : Unit = {}
+  def getBatch(start: Option[Offset], end: Offset): DataFrame
+  def getOffset: Option[Offset]
+  def schema: StructType
+  def stop(): Unit
+}
+----
+
+.Source Contract
+[cols="1,2",options="header",width="100%"]
+|===
+| Method
+| Description
+
+| [[getBatch]] `getBatch`
+| Generates a `DataFrame` (with new rows) for a given batch (described using the optional start and end offsets).
+
+Used when `StreamExecution` link:spark-sql-streaming-MicroBatchExecution.adoc#runBatch[runs a batch] and link:spark-sql-streaming-MicroBatchExecution.adoc#populateStartOffsets[populateStartOffsets].
+
+| [[getOffset]] `getOffset`
+a| Finding the latest offset
+
+NOTE: link:spark-sql-streaming-Offset.adoc[Offset] is...FIXME
+
+Used exclusively when `StreamExecution` link:spark-sql-streaming-StreamExecution.adoc#runStream[runs streaming batches] (and link:spark-sql-streaming-MicroBatchExecution.adoc#constructNextBatch-hasNewData[constructing the next streaming batch] for every streaming data source in a streaming Dataset)
+
+| [[schema]] `schema`
+a| Schema of the data from this source
+
+Used when:
+
+* `KafkaSource` link:spark-sql-streaming-KafkaSource.adoc#getBatch[generates a DataFrame with records from Kafka for a streaming batch]
+* `FileStreamSource` link:spark-sql-streaming-FileStreamSource.adoc#getBatch[generates a DataFrame for a streaming batch]
+* `RateStreamSource` link:spark-sql-streaming-RateStreamSource.adoc#getBatch[generates a DataFrame for a streaming batch]
+* `StreamingExecutionRelation` link:spark-sql-streaming-StreamingExecutionRelation.adoc#apply[is created] (for link:spark-sql-streaming-MemoryStream.adoc#logicalPlan[MemoryStream])
+|===

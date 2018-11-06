@@ -1,0 +1,91 @@
+== [[StreamingQuery]] StreamingQuery
+
+`StreamingQuery` is the <<contract, contract>> for a streaming query that is executed continuously and concurrently (i.e. on a separate thread).
+
+NOTE: `StreamingQuery` is called *continuous query* or *stream query*.
+
+NOTE: `StreamingQuery` is a Scala trait with the only implementation being link:spark-sql-streaming-StreamExecution.adoc[StreamExecution] (and less importanly `StreamingQueryWrapper` for serializing non-serializable `StreamExecution`).
+
+`StreamingQuery` can be in two states:
+
+* active (started)
+* inactive (stopped)
+
+If inactive, `StreamingQuery` may have transitioned into the state due to an `StreamingQueryException` (that is available under `exception`).
+
+`StreamingQuery` tracks current state of all the sources, i.e. `SourceStatus`, as `sourceStatuses`.
+
+There could only be a single link:spark-sql-streaming-Sink.adoc[Sink] for a `StreamingQuery` with many link:spark-sql-streaming-Source.adoc[Sources].
+
+`StreamingQuery` can be stopped by `stop` or an exception.
+
+=== [[contract]] StreamingQuery Contract
+
+[source, scala]
+----
+package org.apache.spark.sql.streaming
+
+trait StreamingQuery {
+  def name: String
+  def id: UUID
+  def runId: UUID
+  def sparkSession: SparkSession
+  def isActive: Boolean
+  def exception: Option[StreamingQueryException]
+  def status: StreamingQueryStatus
+  def recentProgress: Array[StreamingQueryProgress]
+  def lastProgress: StreamingQueryProgress
+  def awaitTermination(): Unit
+  def awaitTermination(timeoutMs: Long): Boolean
+  def processAllAvailable(): Unit
+  def stop(): Unit
+  def explain(): Unit
+  def explain(extended: Boolean): Unit
+}
+----
+
+.StreamingQuery Contract
+[cols="1,2",options="header",width="100%"]
+|===
+| Method
+| Description
+
+| [[name]] `name`
+| Optional query name that is unique across all active queries
+
+| [[id]] `id`
+| Unique identifier of a streaming query
+
+| [[runId]] `runId`
+| Unique identifier of the current execution of a streaming query
+
+| [[sparkSession]] `sparkSession`
+| `SparkSession`
+
+| [[isActive]] `isActive`
+| Boolean
+
+| [[exception]] `exception`
+| `StreamingQueryException` if the query has finished due to an exception
+
+| [[status]] `status`
+| `StreamingQueryStatus` (as `StreamExecution` link:spark-sql-streaming-ProgressReporter.adoc#currentStatus[has accumulated] being a `ProgressReporter` while running a streaming query)
+
+| [[recentProgress]] `recentProgress`
+| Collection of recent link:spark-sql-streaming-StreamingQueryProgress.adoc[StreamingQueryProgress] updates.
+
+| [[lastProgress]] `lastProgress`
+| The last link:spark-sql-streaming-StreamingQueryProgress.adoc[StreamingQueryProgress] update.
+
+| [[awaitTermination]] `awaitTermination`
+|
+
+| [[processAllAvailable]] `processAllAvailable`
+| Wait until there are no data available in sources or the query has been terminated.
+
+| [[stop]] `stop`
+|
+
+| [[explain]] `explain`
+|
+|===

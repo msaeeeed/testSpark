@@ -1,0 +1,224 @@
+== [[KafkaSourceProvider]] KafkaSourceProvider -- Data Source Provider for Apache Kafka
+
+`KafkaSourceProvider` is a link:spark-sql-streaming-StreamSourceProvider.adoc[streaming data source provider] for link:spark-sql-streaming-KafkaSource.adoc[KafkaSource] (that is both the batch and streaming data source for https://kafka.apache.org/[Apache Kafka]).
+
+[[shortName]]
+`KafkaSourceProvider` (as a `DataSourceRegister`) is registered as *kafka* format.
+
+[source, scala]
+----
+spark.readStream.format("kafka")
+----
+
+`KafkaSourceProvider` requires the following options (that you can set using `option` method of `DataStreamReader` or `DataStreamWriter`):
+
+1. Exactly one option for `subscribe`, `subscribepattern` or `assign`
+
+1. `kafka.bootstrap.servers` (that becomes `bootstrap.servers` property of the Kafka client)
+
+TIP: Refer to link:spark-sql-streaming-KafkaSource.adoc#options[KafkaSource's Options] for the supported options.
+
+NOTE: `endingoffsets` option <<validateStreamOptions, is not allowed>> in streaming queries.
+
+NOTE: `KafkaSourceProvider` is part of <<spark-sql-kafka-0-10, spark-sql-kafka-0-10 Library Dependency>> and so has to be "installed" in spark-shell using `--package` command-line option.
+
+[source, scala]
+----
+// See the section about KafkaSource for a complete example
+val records = spark.
+  readStream.
+  format("kafka").  // <-- use KafkaSourceProvider
+  option("subscribe", "raw-events").
+  option("kafka.bootstrap.servers", "localhost:9092").
+  option("startingoffsets", "earliest").
+  option("maxOffsetsPerTrigger", 1).
+  load
+----
+
+=== [[createSource]] Creating KafkaSource -- `createSource` Method
+
+[source, scala]
+----
+createSource(
+  sqlContext: SQLContext,
+  metadataPath: String,
+  schema: Option[StructType],
+  providerName: String,
+  parameters: Map[String, String]): Source
+----
+
+Internally, `createSource` first <<validateStreamOptions, validates stream options>>.
+
+CAUTION: FIXME
+
+NOTE: `createSource` is a part of link:spark-sql-streaming-StreamSourceProvider.adoc#createSource[StreamSourceProvider Contract] to create a streaming source for *kafka* format.
+
+=== [[spark-sql-kafka-0-10]] spark-sql-kafka-0-10 Library Dependency
+
+The new structured streaming API for Kafka is part of the `spark-sql-kafka-0-10` artifact. Add the following dependency to sbt project to use the streaming integration:
+
+```
+libraryDependencies += "org.apache.spark" %% "spark-sql-kafka-0-10" % "2.2.0"
+```
+
+[TIP]
+====
+`spark-sql-kafka-0-10` module is not included in the CLASSPATH of link:spark-shell.adoc[spark-shell] so you have to start it with link:spark-submit.adoc#packages[`--packages` command-line option].
+
+```
+./bin/spark-shell --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.2.0
+```
+====
+
+NOTE: Replace `2.2.0` or `2.3.0-SNAPSHOT` with one of the available versions found at http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22spark-streaming-kafka-0-10_2.11%22[The Central Repository's Search] that matches your version of Spark.
+
+=== [[validateGeneralOptions]] Validating General Options For Batch And Streaming Queries -- `validateGeneralOptions` Internal Method
+
+[source, scala]
+----
+validateGeneralOptions(parameters: Map[String, String]): Unit
+----
+
+NOTE: Parameters are case-insensitive, i.e. `OptioN` and `option` are equal.
+
+`validateGeneralOptions` makes sure that exactly one topic subscription strategy is used in `parameters` and can be:
+
+* `subscribe`
+* `subscribepattern`
+* `assign`
+
+`validateGeneralOptions` reports an `IllegalArgumentException` when there is no subscription strategy in use or there are more than one strategies used.
+
+`validateGeneralOptions` makes sure that the value of subscription strategies meet the requirements:
+
+* `assign` strategy starts with `{` (the opening curly brace)
+* `subscribe` strategy has at least one topic (in a comma-separated list of topics)
+* `subscribepattern` strategy has the pattern defined
+
+`validateGeneralOptions` makes sure that `group.id` has not been specified and reports an `IllegalArgumentException` otherwise.
+
+```
+Kafka option 'group.id' is not supported as user-specified consumer groups are not used to track offsets.
+```
+
+`validateGeneralOptions` makes sure that `auto.offset.reset` has not been specified and reports an `IllegalArgumentException` otherwise.
+
+[options="wrap"]
+----
+Kafka option 'auto.offset.reset' is not supported.
+Instead set the source option 'startingoffsets' to 'earliest' or 'latest' to specify where to start. Structured Streaming manages which offsets are consumed internally, rather than relying on the kafkaConsumer to do it. This will ensure that no data is missed when new topics/partitions are dynamically subscribed. Note that 'startingoffsets' only applies when a new Streaming query is started, and
+that resuming will always pick up from where the query left off. See the docs for more details.
+----
+
+`validateGeneralOptions` makes sure that the following options have not been specified and reports an `IllegalArgumentException` otherwise:
+
+* `kafka.key.deserializer`
+* `kafka.value.deserializer`
+* `kafka.enable.auto.commit`
+* `kafka.interceptor.classes`
+
+In the end, `validateGeneralOptions` makes sure that `kafka.bootstrap.servers` option was specified and reports an `IllegalArgumentException` otherwise.
+
+```
+Option 'kafka.bootstrap.servers' must be specified for configuring Kafka consumer
+```
+
+NOTE: `validateGeneralOptions` is used when `KafkaSourceProvider` validates options for <<validateStreamOptions, streaming>> and <<validateBatchOptions, batch>> queries.
+
+=== [[strategy]] Creating ConsumerStrategy -- `strategy` Internal Method
+
+[source, scala]
+----
+strategy(caseInsensitiveParams: Map[String, String])
+----
+
+Internally, `strategy` finds the keys in the input `caseInsensitiveParams` that are one of the following and creates a corresponding link:spark-sql-streaming-ConsumerStrategy.adoc[ConsumerStrategy].
+
+.KafkaSourceProvider.strategy's Key to ConsumerStrategy Conversion
+[cols="1,2",options="header",width="100%"]
+|===
+| Key
+| ConsumerStrategy
+
+| `assign`
+a| link:spark-sql-streaming-ConsumerStrategy.adoc#AssignStrategy[AssignStrategy] with Kafka's http://kafka.apache.org/0110/javadoc/org/apache/kafka/common/TopicPartition.html[TopicPartitions].
+
+---
+
+`strategy` uses `JsonUtils.partitions` method to parse a JSON with topic names and partitions, e.g.
+
+```
+{"topicA":[0,1],"topicB":[0,1]}
+```
+
+The topic names and partitions are mapped directly to Kafka's `TopicPartition` objects.
+
+| `subscribe`
+a| link:spark-sql-streaming-ConsumerStrategy.adoc#SubscribeStrategy[SubscribeStrategy] with topic names
+
+---
+
+`strategy` extracts topic names from a comma-separated string, e.g.
+
+```
+topic1,topic2,topic3
+```
+
+| `subscribepattern`
+| link:spark-sql-streaming-ConsumerStrategy.adoc#SubscribePatternStrategy[SubscribePatternStrategy] with topic subscription regex pattern (that uses Java's http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[java.util.regex.Pattern] for the pattern), e.g.
+
+```
+topic\d
+```
+|===
+
+[NOTE]
+====
+`strategy` is used when:
+
+* `KafkaSourceProvider` <<createSource, creates a KafkaOffsetReader for KafkaSource>>.
+
+* `KafkaSourceProvider` creates a KafkaRelation (using `createRelation` method).
+====
+
+=== [[sourceSchema]] Specifying Name and Schema of Streaming Source for Kafka Format -- `sourceSchema` Method
+
+[source, scala]
+----
+sourceSchema(
+  sqlContext: SQLContext,
+  schema: Option[StructType],
+  providerName: String,
+  parameters: Map[String, String]): (String, StructType)
+----
+
+NOTE: `sourceSchema` is a part of link:spark-sql-streaming-StreamSourceProvider.adoc#sourceSchema[StreamSourceProvider Contract] to define the name and the schema of a streaming source.
+
+`sourceSchema` gives the <<shortName, short name>> (i.e. `kafka`) and the link:spark-sql-streaming-KafkaOffsetReader.adoc#kafkaSchema[fixed schema].
+
+Internally, `sourceSchema` <<validateStreamOptions, validates Kafka options>> and makes sure that the optional input `schema` is indeed undefined.
+
+When the input `schema` is defined, `sourceSchema` reports a `IllegalArgumentException`.
+
+```
+Kafka source has a fixed schema and cannot be set with a custom one
+```
+
+NOTE: `sourceSchema` is used exclusively when `DataSource` is requested the link:spark-sql-streaming-DataSource.adoc#sourceSchema[name and schema of a streaming source].
+
+=== [[validateStreamOptions]] Validating Kafka Options for Streaming Queries -- `validateStreamOptions` Internal Method
+
+[source, scala]
+----
+validateStreamOptions(caseInsensitiveParams: Map[String, String]): Unit
+----
+
+Firstly, `validateStreamOptions` makes sure that `endingoffsets` option is not used. Otherwise, `validateStreamOptions` reports a `IllegalArgumentException`.
+
+```
+ending offset not valid in streaming queries
+```
+
+`validateStreamOptions` then <<validateGeneralOptions, validates the general options>>.
+
+NOTE: `validateStreamOptions` is used when `KafkaSourceProvider` is requested the <<sourceSchema, schema for Kafka source>> and to <<createSource, create a KafkaSource>>.

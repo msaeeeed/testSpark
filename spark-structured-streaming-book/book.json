@@ -1,0 +1,18 @@
+{
+    "structure": {
+        "readme": "book-intro.adoc"
+    },
+    "variables": {
+       "spark.version": "2.2+",
+       "sourcedir": "src/main/scala"
+     },
+    "plugins": ["ga"],
+    "pluginsConfig": {
+        "ga": {
+            "token": "UA-86782445-2"
+        }
+    },
+    "variables": {
+      "version": "2.3.1"
+    }
+}

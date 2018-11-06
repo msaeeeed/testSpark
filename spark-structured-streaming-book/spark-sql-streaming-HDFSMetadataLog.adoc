@@ -1,0 +1,102 @@
+== [[HDFSMetadataLog]] HDFSMetadataLog -- MetadataLog with Hadoop HDFS for Reliable Storage
+
+`HDFSMetadataLog` is a link:spark-sql-streaming-MetadataLog.adoc[MetadataLog] that uses Hadoop HDFS for a reliable storage.
+
+NOTE: `HDFSMetadataLog` uses <<path, path>> (specified when <<creating-instance, created>>) that is created automatically unless exists already.
+
+`HDFSMetadataLog` is <<creating-instance, created>> when:
+
+* `KafkaSource` is first requested for link:spark-sql-streaming-KafkaSource.adoc#initialPartitionOffsets[initial partition offsets] (from the metadata storage)
+
+* `RateStreamSource` link:spark-sql-streaming-RateStreamSource.adoc#creating-instance[is created] (and looks up link:spark-sql-streaming-RateStreamSource.adoc#startTimeMs[startTimeMs] in the metadata storage)
+
+`HDFSMetadataLog` is <<available-implementations, further customized>> to...FIXME
+
+[[available-implementations]]
+.HDFSMetadataLog's Available Implementations
+[cols="1,2",options="header",width="100%"]
+|===
+| HDFSMetadataLog
+| Description
+
+| [[BatchCommitLog]] link:spark-sql-streaming-CommitLog.adoc[BatchCommitLog]
+|
+
+| [[CompactibleFileStreamLog]] link:spark-sql-streaming-CompactibleFileStreamLog.adoc[CompactibleFileStreamLog]
+|
+
+| [[OffsetSeqLog]] link:spark-sql-streaming-OffsetSeqLog.adoc[OffsetSeqLog]
+|
+|===
+
+[[internal-registries]]
+.HDFSMetadataLog's Internal Registries and Counters
+[cols="1,2",options="header",width="100%"]
+|===
+| Name
+| Description
+
+| [[fileManager]] `fileManager`
+| `FileManager` that...FIXME
+
+| [[batchFilesFilter]] `batchFilesFilter`
+| Filter of batch files
+
+| [[metadataPath]] `metadataPath`
+| The path to metadata directory
+|===
+
+=== [[serialize]] Writing Metadata in Serialized Format -- `serialize` Method
+
+CAUTION: FIXME
+
+=== [[deserialize]] `deserialize` Method
+
+CAUTION: FIXME
+
+=== [[createFileManager]] `createFileManager` Internal Method
+
+[source, scala]
+----
+createFileManager(): FileManager
+----
+
+CAUTION: FIXME
+
+NOTE: `createFileManager` is used exclusively when `HDFSMetadataLog` is <<creating-instance, created>> (and the internal <<fileManager, FileManager>> is created alongside).
+
+=== [[get]] Retrieving Metadata By Batch Id -- `get` Method
+
+CAUTION: FIXME
+
+=== [[add]] `add` Method
+
+CAUTION: FIXME
+
+=== [[getLatest]] Retrieving Latest Committed Batch Id with Metadata If Available -- `getLatest` Method
+
+[source, scala]
+----
+getLatest(): Option[(Long, T)]
+----
+
+NOTE: `getLatest` is a part of link:spark-sql-streaming-MetadataLog.adoc#getLatest[MetadataLog Contract] to retrieve the recently-committed batch id and the corresponding metadata if available in the metadata storage.
+
+`getLatest` requests the internal <<fileManager, FileManager>> for the files in <<metadataPath, metadata directory>> that match <<batchFilesFilter, batch file filter>>.
+
+`getLatest` takes the batch ids (the batch files correspond to) and sorts the ids in reverse order.
+
+`getLatest` gives the first batch id with the metadata which <<get, could be found in the metadata storage>>.
+
+NOTE: It is possible that the batch id could be in the metadata storage, but not available for retrieval.
+
+=== [[creating-instance]] Creating HDFSMetadataLog Instance
+
+`HDFSMetadataLog` takes the following when created:
+
+* [[sparkSession]] `SparkSession`
+* [[path]] Path of the metadata log directory
+
+`HDFSMetadataLog` initializes the <<internal-registries, internal registries and counters>>.
+
+`HDFSMetadataLog` creates the <<path, path>> unless exists already.

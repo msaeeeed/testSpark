@@ -1,0 +1,313 @@
+== Structured Streaming -- Streaming Datasets
+
+*Structured Streaming* is a stream processing engine with a high-level declarative streaming API built on top of Spark SQL allowing for link:spark-sql-streaming-StreamingQuery.adoc[continuous incremental execution of a structured query].
+
+The semantics of the Structured Streaming model is as follows (see the article https://databricks.com/blog/2016/07/28/structured-streaming-in-apache-spark.html[Structured Streaming In Apache Spark]):
+
+> At any time, the output of a continuous application is equivalent to executing a batch job on a prefix of the data.
+
+NOTE: As of Spark 2.2.0, Structured Streaming has been marked stable and ready for production use. With that the other older streaming module Spark Streaming should _de facto_ be considered obsolete and not used for developing new Spark applications.
+
+Structured Streaming attempts to unify streaming, interactive, and batch queries over structured datasets for developing end-to-end stream processing applications dubbed *continuous applications* using Spark SQL's Datasets API with additional support for the following features:
+
+* link:spark-sql-streaming-Dataset-operators.adoc#groupBy[Continuous streaming aggregations]
+
+* link:spark-sql-streaming-Dataset-withWatermark.adoc[Streaming watermark] (for state expiration and late events)
+
+* Continuous window aggregations (aka *windowing*) using `groupBy` operator with `window` function
+
+* link:spark-sql-streaming-KeyValueGroupedDataset.adoc#flatMapGroupsWithState[arbitrary stateful stream aggregation]
+
+In Structured Streaming, Spark developers describe custom streaming computations in the same way as with Spark SQL. Internally, Structured Streaming applies the user-defined structured query to the continuously and indefinitely arriving data to analyze real-time streaming data.
+
+With Structured Streaming, Spark 2 aims at simplifying *streaming analytics* with little to no need to reason about effective data streaming (trying to hide the unnecessary complexity in your streaming analytics architectures).
+
+Structured Streaming introduces *streaming Datasets* that are _infinite datasets_ with primitives like input link:spark-sql-streaming-Source.adoc[streaming data sources] and output link:spark-sql-streaming-Sink.adoc[streaming data sinks].
+
+[TIP]
+====
+A `Dataset` is *streaming* (aka _continuous_) when its logical plan is streaming.
+
+[source, scala]
+----
+val batchQuery = spark.
+  read. // <-- batch non-streaming query
+  csv("sales")
+scala> batchQuery.isStreaming
+res0: Boolean = false
+
+val streamingQuery = spark.
+  readStream. // <-- streaming query
+  format("rate").
+  load
+scala> streamingQuery.isStreaming
+res1: Boolean = true
+----
+
+More information about Spark SQL, Datasets and logical plans is available in https://jaceklaskowski.gitbooks.io/mastering-apache-spark/[Mastering Apache Spark 2].
+====
+
+Structured Streaming models a stream of data as an infinite (and hence continuous) table that could be changed every streaming batch.
+
+You can specify link:spark-sql-streaming-OutputMode.adoc[output mode] of a streaming dataset which is what gets written to a streaming sink (i.e. the infinite table) when there is new data available.
+
+Streaming Datasets use *streaming query plans* (as opposed to regular batch Datasets that are based on batch query plans).
+
+[NOTE]
+====
+From this perspective, batch queries can be considered streaming Datasets executed once only (and is why some batch queries, e.g. link:spark-sql-streaming-KafkaSource.adoc[KafkaSource], can easily work in batch mode).
+
+[source, scala]
+----
+val batchQuery = spark.read.format("rate").load
+scala> batchQuery.isStreaming
+res0: Boolean = false
+
+val streamingQuery = spark.readStream.format("rate").load
+scala> streamingQuery.isStreaming
+res1: Boolean = true
+----
+====
+
+[source, scala]
+----
+// The following example executes a streaming query over CSV files
+// CSV format requires a schema before you can start the query
+
+// You could build your schema manually
+import org.apache.spark.sql.types._
+val schema = StructType(
+  StructField("id", LongType, false) ::
+  StructField("name", StringType, true) ::
+  StructField("city", StringType, true) :: Nil)
+
+// ...or using the Schema DSL
+val schema = new StructType().
+  add($"long".long.copy(nullable = false)).
+  add($"name".string).
+  add($"city".string)
+
+// ...but is error-prone and time-consuming, isn't it?
+
+// Use the business object that describes the dataset
+case class Person(id: Long, name: String, city: String)
+
+import org.apache.spark.sql.Encoders
+val schema = Encoders.product[Person].schema
+
+val people = spark.
+  readStream.
+  schema(schema).
+  csv("in/*.csv").
+  as[Person]
+
+// people has this additional capability of being streaming
+scala> people.isStreaming
+res0: Boolean = true
+
+// ...but it is still a Dataset.
+// (Almost) any Dataset operation is available
+val population = people.
+  groupBy('city).
+  agg(count('city) as "population")
+
+// Start the streaming query
+// Write the result using console format, i.e. print to the console
+// Only Complete output mode supported by groupBy
+import scala.concurrent.duration._
+import org.apache.spark.sql.streaming.{OutputMode, Trigger}
+val populationStream = population.
+  writeStream.
+  format("console").
+  trigger(Trigger.ProcessingTime(30.seconds)).
+  outputMode(OutputMode.Complete).
+  queryName("textStream").
+  start
+
+scala> populationStream.isActive
+res1: Boolean = true
+
+scala> populationStream.explain(extended = true)
+== Parsed Logical Plan ==
+Aggregate [city#112], [city#112, count(city#112) AS population#19L]
++- Relation[id#110L,name#111,city#112] csv
+
+== Analyzed Logical Plan ==
+city: string, population: bigint
+Aggregate [city#112], [city#112, count(city#112) AS population#19L]
++- Relation[id#110L,name#111,city#112] csv
+
+== Optimized Logical Plan ==
+Aggregate [city#112], [city#112, count(city#112) AS population#19L]
++- Project [city#112]
+   +- Relation[id#110L,name#111,city#112] csv
+
+== Physical Plan ==
+*HashAggregate(keys=[city#112], functions=[count(city#112)], output=[city#112, population#19L])
++- Exchange hashpartitioning(city#112, 200)
+   +- *HashAggregate(keys=[city#112], functions=[partial_count(city#112)], output=[city#112, count#118L])
+      +- *FileScan csv [city#112] Batched: false, Format: CSV, InputPaths: file:/Users/jacek/dev/oss/spark/in/1.csv, file:/Users/jacek/dev/oss/spark/in/2.csv, file:/Users/j..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<city:string>
+
+// Let's query for all active streams
+scala> spark.streams.active.foreach(println)
+Streaming Query - Population [state = ACTIVE]
+
+// You may eventually want to stop the streaming query
+populationStream.stop
+
+scala> populationStream.isActive
+res2: Boolean = false
+----
+
+Structured streaming is defined by the following data abstractions in `org.apache.spark.sql.streaming` package:
+
+1. link:spark-sql-streaming-StreamingQuery.adoc[StreamingQuery]
+2. link:spark-sql-streaming-Source.adoc[Streaming Source]
+3. link:spark-sql-streaming-Sink.adoc[Streaming Sink]
+4. link:spark-sql-streaming-StreamingQueryManager.adoc[StreamingQueryManager]
+
+Structured Streaming follows micro-batch model and periodically fetches data from the data source (and uses the `DataFrame` data abstraction to represent the fetched data for a certain batch).
+
+With Datasets as Spark SQL's view of structured data, structured streaming checks input sources for new data every link:spark-sql-streaming-Trigger.adoc[trigger] (time) and executes the (continuous) queries.
+
+TIP: Structured Streaming was introduced in https://issues.apache.org/jira/browse/SPARK-8360[SPARK-8360 Structured Streaming (aka Streaming DataFrames)].
+
+TIP: Read the official programming guide of Spark about http://spark.apache.org/docs/latest/structured-streaming-programming-guide.html[Structured Streaming].
+
+NOTE: The feature has also been called *Streaming Spark SQL Query*, *Streaming DataFrames*, *Continuous DataFrame* or *Continuous Query*. There have been lots of names before the Spark project settled on Structured Streaming.
+
+=== [[example-socket-in-console-out]] Example -- Streaming Query for Running Counts (over Words from Socket with Output to Console)
+
+NOTE: The example is "borrowed" from http://spark.apache.org/docs/latest/structured-streaming-programming-guide.html[the official documentation of Spark]. Changes and errors are only mine.
+
+TIP: You need to run `nc -lk 9999` first before running the example.
+
+[source, scala]
+----
+val lines = spark.readStream
+  .format("socket")
+  .option("host", "localhost")
+  .option("port", 9999)
+  .load
+  .as[String]
+
+val words = lines.flatMap(_.split("\\W+"))
+
+scala> words.printSchema
+root
+ |-- value: string (nullable = true)
+
+val counter = words.groupBy("value").count
+
+// nc -lk 9999 is supposed to be up at this point
+
+import org.apache.spark.sql.streaming.OutputMode.Complete
+val query = counter.writeStream
+  .outputMode(Complete)
+  .format("console")
+  .start
+
+query.stop
+----
+
+=== [[example-csv-in-console-out]] Example -- Streaming Query over CSV Files with Output to Console Every 5 Seconds
+
+Below you can find a complete example of a streaming query in a form of `DataFrame` of data from `csv-logs` files in `csv` format of a given schema into a link:spark-sql-streaming-ConsoleSink.adoc[ConsoleSink] every 5 seconds.
+
+TIP: Copy and paste it to Spark Shell in `:paste` mode to run it.
+
+[source, scala]
+----
+// Explicit schema with nullables false
+import org.apache.spark.sql.types._
+val schemaExp = StructType(
+  StructField("name", StringType, false) ::
+  StructField("city", StringType, true) ::
+  StructField("country", StringType, true) ::
+  StructField("age", IntegerType, true) ::
+  StructField("alive", BooleanType, false) :: Nil
+)
+
+// Implicit inferred schema
+val schemaImp = spark.read
+  .format("csv")
+  .option("header", true)
+  .option("inferSchema", true)
+  .load("csv-logs")
+  .schema
+
+val in = spark.readStream
+  .schema(schemaImp)
+  .format("csv")
+  .option("header", true)
+  .option("maxFilesPerTrigger", 1)
+  .load("csv-logs")
+
+scala> in.printSchema
+root
+ |-- name: string (nullable = true)
+ |-- city: string (nullable = true)
+ |-- country: string (nullable = true)
+ |-- age: integer (nullable = true)
+ |-- alive: boolean (nullable = true)
+
+println("Is the query streaming" + in.isStreaming)
+
+println("Are there any streaming queries?" + spark.streams.active.isEmpty)
+
+import scala.concurrent.duration._
+import org.apache.spark.sql.streaming.{OutputMode, Trigger}
+val out = in.
+  writeStream.
+  format("console").
+  option("truncate", false).
+  trigger(Trigger.ProcessingTime("5 seconds")).
+  queryName("consoleStream").
+  outputMode(Output.Append).
+  start
+
+16/07/13 12:32:11 TRACE FileStreamSource: Listed 3 file(s) in 4.274022 ms
+16/07/13 12:32:11 TRACE FileStreamSource: Files are:
+	file:///Users/jacek/dev/oss/spark/csv-logs/people-1.csv
+	file:///Users/jacek/dev/oss/spark/csv-logs/people-2.csv
+	file:///Users/jacek/dev/oss/spark/csv-logs/people-3.csv
+16/07/13 12:32:11 DEBUG FileStreamSource: New file: file:///Users/jacek/dev/oss/spark/csv-logs/people-1.csv
+16/07/13 12:32:11 TRACE FileStreamSource: Number of new files = 3
+16/07/13 12:32:11 TRACE FileStreamSource: Number of files selected for batch = 1
+16/07/13 12:32:11 TRACE FileStreamSource: Number of seen files = 1
+16/07/13 12:32:11 INFO FileStreamSource: Max batch id increased to 0 with 1 new files
+16/07/13 12:32:11 INFO FileStreamSource: Processing 1 files from 0:0
+16/07/13 12:32:11 TRACE FileStreamSource: Files are:
+	file:///Users/jacek/dev/oss/spark/csv-logs/people-1.csv
+-------------------------------------------
+Batch: 0
+-------------------------------------------
++-----+--------+-------+---+-----+
+| name|    city|country|age|alive|
++-----+--------+-------+---+-----+
+|Jacek|Warszawa| Polska| 42| true|
++-----+--------+-------+---+-----+
+
+spark.streams
+  .active
+  .foreach(println)
+// Streaming Query - consoleStream [state = ACTIVE]
+
+scala> spark.streams.active(0).explain
+== Physical Plan ==
+*Scan csv [name#130,city#131,country#132,age#133,alive#134] Format: CSV, InputPaths: file:/Users/jacek/dev/oss/spark/csv-logs/people-3.csv, PushedFilters: [], ReadSchema: struct<name:string,city:string,country:string,age:int,alive:boolean>
+----
+
+=== [[i-want-more]] Further reading or watching
+
+* (article) https://databricks.com/blog/2016/07/28/structured-streaming-in-apache-spark.html[Structured Streaming In Apache Spark]
+
+* (video) https://youtu.be/oXkxXDG0gNk[The Future of Real Time in Spark] from Spark Summit East 2016 in which Reynold Xin presents the concept of *Streaming DataFrames* to the public
+
+* (video) https://youtu.be/i7l3JQRx7Qw?t=19m15s[Structuring Spark: DataFrames, Datasets, and Streaming]
+
+* (article) http://www.infoworld.com/article/3052924/analytics/what-sparks-structured-streaming-really-means.html[What Spark's Structured Streaming really means]
+
+* (video) https://youtu.be/rl8dIzTpxrI[A Deep Dive Into Structured Streaming] by Tathagata "TD" Das from Spark Summit 2016
+
+* (video) https://youtu.be/rl8dIzTpxrI[Arbitrary Stateful Aggregations in Structured Streaming in Apache Spark] by Burak Yavuz

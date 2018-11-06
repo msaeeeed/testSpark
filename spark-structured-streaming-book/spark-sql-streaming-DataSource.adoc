@@ -1,0 +1,72 @@
+== [[DataSource]] DataSource -- Pluggable Data Source
+
+`DataSource` is...FIXME
+
+`DataSource` is <<creating-instance, created>> when...FIXME
+
+TIP: Read https://jaceklaskowski.gitbooks.io/mastering-apache-spark/spark-sql-datasource.html[DataSource &mdash; Pluggable Data Sources] (for Spark SQL's batch structured queries).
+
+[[internal-registries]]
+.DataSource's Internal Registries and Counters
+[cols="1,2",options="header",width="100%"]
+|===
+| Name
+| Description
+
+| [[sourceInfo]] `sourceInfo`
+a| `SourceInfo` with the name, the schema, and optional partitioning columns of a source.
+
+Used when:
+
+* `DataSource` <<createSource, creates a FileStreamSource>> (that requires the schema and the optional partitioning columns)
+
+* `StreamingRelation` link:spark-sql-streaming-StreamingRelation.adoc#apply[is created] (for a `DataSource`)
+|===
+
+=== [[sourceSchema]] Describing Name and Schema of Streaming Source -- `sourceSchema` Internal Method
+
+[source, scala]
+----
+sourceSchema(): SourceInfo
+----
+
+`sourceSchema`...FIXME
+
+NOTE: `sourceSchema` is used exclusively when `DataSource` is requested <<sourceInfo, SourceInfo>>.
+
+=== [[creating-instance]] Creating DataSource Instance
+
+`DataSource` takes the following when created:
+
+* [[sparkSession]] `SparkSession`
+* [[className]] Name of the class
+* [[paths]] Paths (default: `Nil`, i.e. an empty collection)
+* [[userSpecifiedSchema]] Optional user-defined schema (default: `None`)
+* [[partitionColumns]] Names of the partition columns (default: empty)
+* [[bucketSpec]] Optional `BucketSpec` (default: `None`)
+* [[options]] Configuration options (default: empty)
+* [[catalogTable]] Optional `CatalogTable` (default: `None`)
+
+`DataSource` initializes the <<internal-registries, internal registries and counters>>.
+
+=== [[createSource]] `createSource` Method
+
+[source, scala]
+----
+createSource(metadataPath: String): Source
+----
+
+`createSource`...FIXME
+
+NOTE: `createSource` is used when...FIXME
+
+=== [[createSink]] Creating Streaming Sink -- `createSink` Method
+
+[source, scala]
+----
+createSink(outputMode: OutputMode): Sink
+----
+
+`createSink`...FIXME
+
+NOTE: `createSink` is used exclusively when `DataStreamWriter` is requested to link:spark-sql-streaming-DataStreamWriter.adoc#start[start].

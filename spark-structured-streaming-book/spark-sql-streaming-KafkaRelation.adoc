@@ -1,0 +1,43 @@
+== [[KafkaRelation]] KafkaRelation
+
+`KafkaRelation` is...FIXME
+
+`KafkaRelation` is <<creating-instance, created>> when...FIXME
+
+=== [[creating-instance]] Creating KafkaRelation Instance
+
+`KafkaRelation` takes the following when created:
+
+* [[sqlContext]] `SQLContext`
+* [[strategy]] link:spark-sql-streaming-ConsumerStrategy.adoc[ConsumerStrategy]
+* [[sourceOptions]] `Source` options
+* [[specifiedKafkaParams]] User-defined Kafka parameters
+* [[failOnDataLoss]] `failOnDataLoss` flag
+* [[startingOffsets]] `KafkaOffsetRangeLimit`
+* [[endingOffsets]] `KafkaOffsetRangeLimit`
+
+`KafkaRelation` initializes the <<internal-registries, internal registries and counters>>.
+
+=== [[getPartitionOffsets]] `getPartitionOffsets` Internal Method
+
+[source, scala]
+----
+getPartitionOffsets(
+  kafkaReader: KafkaOffsetReader,
+  kafkaOffsets: KafkaOffsetRangeLimit): Map[TopicPartition, Long]
+----
+
+CAUTION: FIXME
+
+NOTE: `getPartitionOffsets` is used exclusively when `KafkaRelation` <<buildScan, builds RDD of rows (from the tuples)>>.
+
+=== [[buildScan]] Building RDD with Records (from Topics) -- `buildScan` Method
+
+[source, scala]
+----
+buildScan(): RDD[Row]
+----
+
+NOTE: `buildScan` is a part of `TableScan` contract.
+
+CAUTION: FIXME

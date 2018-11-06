@@ -1,0 +1,206 @@
+== [[StateStore]] StateStore -- Streaming Aggregation State Management
+
+`StateStore` is the <<contract, contract>> of a versioned and fault-tolerant key-value store for persisting state of running aggregates across streaming batches (for link:spark-sql-streaming-Dataset-operators.adoc[aggregate operations] on streaming Datasets).
+
+TIP: Read the motivation and design in https://docs.google.com/document/d/1-ncawFx8JS5Zyfq1HAEGBx56RDet9wfVp_hDM8ZL254/edit[State Store for Streaming Aggregations].
+
+`StateStore` describes a key-value store that lives on every executor (across the nodes in a Spark cluster) for persistent keyed aggregates.
+
+`StateStore` is identified with the aggregating operator id and the partition id.
+
+[[contract]]
+[source, scala]
+----
+package org.apache.spark.sql.execution.streaming.state
+
+trait StateStore {
+  def abort(): Unit
+  def commit(): Long
+  def get(key: UnsafeRow): UnsafeRow
+  def getRange(start: Option[UnsafeRow], end: Option[UnsafeRow]): Iterator[UnsafeRowPair]
+  def hasCommitted: Boolean
+  def id: StateStoreId
+  def iterator(): Iterator[UnsafeRowPair]
+  def metrics: StateStoreMetrics
+  def put(key: UnsafeRow, value: UnsafeRow): Unit
+  def remove(key: UnsafeRow): Unit
+  def version: Long
+}
+----
+
+.StateStore Contract
+[cols="1,2",options="header",width="100%"]
+|===
+| Method
+| Description
+
+| [[abort]] `abort`
+|
+
+| [[commit]] `commit`
+|
+
+| [[get]] `get`
+|
+
+Used exclusively when `StateStoreRDD` link:spark-sql-streaming-StateStoreRDD.adoc#compute[is executed].
+
+| [[getRange]] `getRange`
+|
+
+| [[hasCommitted]] `hasCommitted`
+|
+
+| [[id]] `id`
+|
+
+| [[iterator]] `iterator`
+|
+
+| [[metrics]] `metrics`
+|
+
+| [[put]] `put`
+a| Stores a value for a non-null key (both of `UnsafeRow` type)
+
+Used when:
+
+* `StateStoreSaveExec` is link:spark-sql-streaming-StateStoreSaveExec.adoc#doExecute[executed] (and...FIXME)
+
+* `StreamingDeduplicateExec` is link:spark-sql-streaming-StreamingDeduplicateExec.adoc#doExecute[executed] (and...FIXME)
+
+* `StateStoreUpdater` attempts to write the current state when rows are processed (which is when their iterator is fully consumed).
+
+CAUTION: FIXME Review StateStoreUpdater.callFunctionAndUpdateState
+
+| [[remove]] `remove`
+|
+
+| [[version]] `version`
+|
+|===
+
+[[internal-registries]]
+.StateStore's Internal Registries and Counters
+[cols="1,2",options="header",width="100%"]
+|===
+| Name
+| Description
+
+| [[loadedProviders]] `loadedProviders`
+| Registry of link:spark-sql-streaming-StateStoreProvider.adoc[StateStoreProviders] per `StateStoreProviderId`
+
+Used in...FIXME
+
+| [[_coordRef]] `_coordRef`
+| link:spark-sql-streaming-StateStoreCoordinatorRef.adoc[StateStoreCoordinatorRef] (a `RpcEndpointRef` to link:spark-sql-streaming-StateStoreCoordinator.adoc[StateStoreCoordinator]).
+
+Used in...FIXME
+|===
+
+NOTE: `StateStore` was introduced in https://github.com/apache/spark/commit/8c826880f5eaa3221c4e9e7d3fece54e821a0b98[[SPARK-13809\][SQL\] State store for streaming aggregations].
+
+=== [[coordinatorRef]] Creating StateStoreCoordinatorRef (for Executors) -- `coordinatorRef` Internal Method
+
+CAUTION: FIXME
+
+=== [[unload]] Removing StateStoreProvider From Provider Registry -- `unload` Internal Method
+
+CAUTION: FIXME
+
+=== [[verifyIfStoreInstanceActive]] `verifyIfStoreInstanceActive` Internal Method
+
+CAUTION: FIXME
+
+=== [[reportActiveStoreInstance]] Announcing New StateStoreProvider -- `reportActiveStoreInstance` Internal Method
+
+[source, scala]
+----
+reportActiveStoreInstance(storeProviderId: StateStoreProviderId): Unit
+----
+
+`reportActiveStoreInstance` takes the current host and executorId (from `BlockManager`) and requests `StateStoreCoordinatorRef` to link:spark-sql-streaming-StateStoreCoordinatorRef.adoc#reportActiveInstance[reportActiveInstance].
+
+NOTE: `reportActiveStoreInstance` uses `SparkEnv` to access the current `BlockManager`.
+
+You should see the following INFO message in the logs:
+
+```
+Reported that the loaded instance [storeProviderId] is active
+```
+
+NOTE: `reportActiveStoreInstance` is used exclusively when `StateStore` is requested to <<get, find the StateStore by StateStoreProviderId>>.
+
+=== [[numKeys]] `numKeys` Method
+
+CAUTION: FIXME
+
+=== [[get]] Finding StateStore by StateStoreProviderId -- `get` Method
+
+[source, scala]
+----
+get(
+  storeProviderId: StateStoreProviderId,
+  keySchema: StructType,
+  valueSchema: StructType,
+  indexOrdinal: Option[Int],
+  version: Long,
+  storeConf: StateStoreConf,
+  hadoopConf: Configuration): StateStore
+----
+
+`get` finds `StateStore` for `StateStoreProviderId`.
+
+Internally, `get` looks up the `StateStoreProvider` (for `storeProviderId`) in <<loadedProviders, loadedProviders>> registry. If unavailable, `get` link:spark-sql-streaming-StateStoreProvider.adoc#createAndInit[creates and initializes one].
+
+`get` will also <<startMaintenanceIfNeeded, start the periodic maintenance task>> (unless already started) and <<reportActiveStoreInstance, announce the new StateStoreProvider>>.
+
+In the end, `get` link:spark-sql-streaming-StateStoreProvider.adoc#getStore[gets] the `StateStore` (for the `version`).
+
+NOTE: `get` is used exclusively when `StateStoreRDD` link:spark-sql-streaming-StateStoreRDD.adoc#compute[is computed].
+
+=== [[startMaintenanceIfNeeded]] Starting Periodic Maintenance Task (Unless Already Started) -- `startMaintenanceIfNeeded` Internal Method
+
+[source, scala]
+----
+startMaintenanceIfNeeded(): Unit
+----
+
+`startMaintenanceIfNeeded` schedules <<MaintenanceTask, MaintenanceTask>> to start after and every link:spark-sql-streaming-properties.adoc#spark.sql.streaming.stateStore.maintenanceInterval[spark.sql.streaming.stateStore.maintenanceInterval] (defaults to `60s`).
+
+NOTE: `startMaintenanceIfNeeded` does nothing when the maintenance task has already been started and is still running.
+
+NOTE: `startMaintenanceIfNeeded` is used exclusively when `StateStore` is requested to <<get, find the StateStore by StateStoreProviderId>>.
+
+=== [[MaintenanceTask]] `MaintenanceTask` Daemon Thread
+
+`MaintenanceTask` is a daemon thread that <<doMaintenance, triggers maintenance work of every registered StateStoreProvider>>.
+
+When an error occurs, `MaintenanceTask` clears <<loadedProviders, loadedProviders>> registry.
+
+`MaintenanceTask` is scheduled on *state-store-maintenance-task* thread pool.
+
+NOTE: Use link:spark-sql-streaming-properties.adoc#spark.sql.streaming.stateStore.maintenanceInterval[spark.sql.streaming.stateStore.maintenanceInterval] Spark property (default: `60s`) to control the initial delay and how often the thread should be executed.
+
+=== [[doMaintenance]] Triggering Maintenance of Registered StateStoreProviders -- `doMaintenance` Internal Method
+
+[source, scala]
+----
+doMaintenance(): Unit
+----
+
+Internally, `doMaintenance` prints the following DEBUG message to the logs:
+
+```
+DEBUG Doing maintenance
+```
+
+`doMaintenance` then requests every link:spark-sql-streaming-StateStoreProvider.adoc[StateStoreProvider] (registered in <<loadedProviders, loadedProviders>>) to link:spark-sql-streaming-StateStoreProvider.adoc#doMaintenance[do its own internal maintenance] (only when a `StateStoreProvider` <<verifyIfStoreInstanceActive, is still active>>).
+
+When a `StateStoreProvider` is <<verifyIfStoreInstanceActive, inactive>>, `doMaintenance` <<unload, removes it from the provider registry>> and prints the following INFO message to the logs:
+
+```
+INFO Unloaded [provider]
+```
+
+NOTE: `doMaintenance` is used exclusively in <<MaintenanceTask, MaintenanceTask daemon thread>>.
